@@ -21,7 +21,7 @@
 		</div>
 		<div class="w-full md:w-1/2 md:space-x-4">
 			<label
-				class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+				class="block uppercase md:mx-4 tracking-wide text-gray-700 text-xs font-bold mb-2"
 				for="grid-last-name"
 			>
 				Last Name
@@ -52,7 +52,7 @@
 		</div>
 		<div class="w-full md:w-1/2 md:space-x-4">
 			<label
-				class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+				class="block uppercase md:mx-4 tracking-wide text-gray-700 text-xs font-bold mb-2"
 				for="grid-last-name"
 			>
 				Employee Type
@@ -127,5 +127,14 @@
 				</div>
 			</div>
 		</div>
+	</div>
+
+	<div class="flex flex-wrap -mx-3 mb-6">
+		<button
+			class="bg-[#258897] hover:bg-[#27575f] text-white font-bold py-2 px-6 rounded-md focus:outline-none focus:shadow-outline"
+			type="button"
+		>
+			Submit
+		</button>
 	</div>
 </form>

@@ -60,7 +60,7 @@
 								</td>
 
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-									{row.primarySkills}
+									{row.primarySkills.join(', ')}
 								</td>
 							</tr>
 						{/each}

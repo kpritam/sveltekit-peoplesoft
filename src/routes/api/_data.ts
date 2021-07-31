@@ -1,18 +1,23 @@
 import type { BenchList } from '../../types';
+import faker from 'faker';
 
-const imgUrl =
-	'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60';
-const mkEmployee = (
-	name: string,
-	imgUrl: string,
-	designation: string,
-	region: string,
-	location: string,
-	empType: string,
-	primarySkills: string[]
-) => ({ name, imgUrl, designation, region, location, empType, primarySkills });
+const generateUsers = (): BenchList =>
+	[...Array(50)].map(() => {
+		const firstName = faker.name.firstName();
+		const lastName = faker.name.lastName();
 
-export const data: BenchList = [
-	mkEmployee('Pritam', imgUrl, 'Developer', 'India', 'Mumbai', 'Contractor', ['Scala, Typescript']),
-	mkEmployee('Tushar', imgUrl, 'Data Engineer', 'US', 'Chicago', 'Permanent', ['Spark, Hadoop'])
-];
+		return {
+			name: firstName + ' ' + lastName,
+			imgUrl: faker.image.avatar(),
+			designation: faker.name.jobTitle(),
+			region: faker.address.stateAbbr(),
+			location: faker.address.city(),
+			empType: faker.random.arrayElement(['Manager', 'Developer', 'Designer']),
+			primarySkills: faker.random.arrayElements(
+				['Angular', 'React', 'Vue', 'Scala', 'Spark', 'Hadoop', 'Java', 'C/C++'],
+				faker.datatype.number({ min: 1, max: 4 })
+			)
+		};
+	});
+
+export const data = generateUsers();
