@@ -4,7 +4,6 @@
 		const res = await fetch(url);
 
 		if (res.ok) {
-			console.log(res);
 			return {
 				props: {
 					data: await res.json()
