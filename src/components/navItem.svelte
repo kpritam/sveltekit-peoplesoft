@@ -4,20 +4,17 @@
 	export let name: string;
 	export let link: string;
 
-	let item;
+	let item: HTMLAnchorElement;
 	$: active = $page.path === link;
 </script>
 
 <div
-	class="cursor-pointer p-2 {active && 'bg-[#266974]'}  hover:bg-[#266974] rounded-xl group
+	class="cursor-pointer z-50 px-4 py-2 {active &&
+		'bg-[#266974]'}  hover:bg-[#266974] rounded-xl group
 hover:animate-bounce ease-out transition scale-100"
 	on:click={() => item.click()}
 >
-	<a
-		href={link}
-		bind:this={item}
-		class="font-semibold uppercase group-hover:text-[#ffffff] text-[#d6eaee]"
-	>
+	<a href={link} bind:this={item} class="uppercase group-hover:text-[#ffffff] text-[#d6eaee]">
 		{name}
 	</a>
 </div>
