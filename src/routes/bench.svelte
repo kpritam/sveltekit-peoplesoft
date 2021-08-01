@@ -1,6 +1,6 @@
 <script context="module">
 	export async function load({ fetch }) {
-		const url = `/api/benchList.json`;
+		const url = `/api/benchList`;
 		const res = await fetch(url);
 
 		if (res.ok) {

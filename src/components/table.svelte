@@ -2,10 +2,8 @@
 	import type { BenchList } from '../types';
 	export let data: BenchList;
 
-	const dd = data.map((d) => [...Object.values(d)]);
-
 	const thead = 'px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider';
-	const headers = ['name', 'designation', 'region', 'location', 'empType', 'primarySkills'];
+	const headers = ['Name', 'Designation', 'Region', 'Location', 'EmpType', 'Primary Skills'];
 </script>
 
 <div class="flex flex-col">
