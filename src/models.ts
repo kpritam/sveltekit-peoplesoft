@@ -1,3 +1,5 @@
+import faker from 'faker';
+
 export type EmployeeDetails = {
 	id: string;
 	name: string;
@@ -23,10 +25,10 @@ export const mkEmployeeDetails = (
 ): EmployeeDetails => ({
 	id,
 	name: firstName + ' ' + lastName,
-	imgUrl: '',
+	imgUrl: faker.image.avatar(),
 	designation,
 	region,
 	location,
 	empType,
-	primarySkills: primarySkills && primarySkills.split(',')
+	primarySkills: primarySkills && primarySkills.split(',').map((v) => v.trim())
 });
