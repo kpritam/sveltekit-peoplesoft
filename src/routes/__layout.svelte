@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-	import { initFirebase } from '../auth/initFirebase';
+	import { initFirebase } from '../firebase/auth/initFirebase';
 	export async function load() {
 		await initFirebase();
 		return {

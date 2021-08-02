@@ -1,4 +1,4 @@
-import { FIREBASE_CONFIG } from '../env';
+import { FIREBASE_CONFIG } from '../../env';
 
 export async function initFirebase(): Promise<void> {
 	if (typeof window !== 'undefined') {

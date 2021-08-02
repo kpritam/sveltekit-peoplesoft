@@ -5,6 +5,7 @@ const STORAGE_BUCKET = import.meta.env.VITE_STORAGE_BUCKET.toString();
 const MESSAGING_SENDER_ID = import.meta.env.VITE_MESSAGING_SENDER_ID.toString();
 const APP_ID = import.meta.env.VITE_APP_ID.toString();
 const MEASUREMENT_ID = import.meta.env.VITE_MEASUREMENT_ID.toString();
+const DATABASE_URL = import.meta.env.VITE_DATABASE_URL.toString();
 
 export const FIREBASE_CONFIG = {
 	apiKey: API_KEY,
@@ -13,5 +14,6 @@ export const FIREBASE_CONFIG = {
 	storageBucket: STORAGE_BUCKET,
 	messagingSenderId: MESSAGING_SENDER_ID,
 	appId: APP_ID,
-	measurementId: MEASUREMENT_ID
+	measurementId: MEASUREMENT_ID,
+	databaseUrl: DATABASE_URL
 };
