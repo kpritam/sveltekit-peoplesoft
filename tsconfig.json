@@ -39,6 +39,5 @@
 		"src/**/*.js",
 		"src/**/*.ts",
 		"src/**/*.svelte",
-		"src/firebase/env.ts"
 	]
 }

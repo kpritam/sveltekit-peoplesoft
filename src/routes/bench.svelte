@@ -1,6 +1,6 @@
 <script context="module">
 	export async function load({ fetch }) {
-		const url = `/api/benchList`;
+		const url = `/api/users`;
 		const res = await fetch(url);
 
 		if (res.ok) {
@@ -19,10 +19,10 @@
 </script>
 
 <script lang="ts">
-	import Table from '../components/table.svelte';
-	import type { BenchList } from '../models';
+	import Table from '$lib/components/table.svelte';
+	import type { Employee } from '$lib/models';
 
-	export let data: BenchList;
+	export let data: Employee[];
 </script>
 
 <svelte:head>

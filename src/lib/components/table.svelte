@@ -1,6 +1,7 @@
 <script lang="ts">
-	import type { BenchList } from '../models';
-	export let data: BenchList;
+	import type { Employee } from '$lib/models';
+	import Delete from '$lib/components/icons/delete.svelte';
+	export let data: Employee[];
 
 	const thead = 'px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider';
 	const headers = ['Name', 'Designation', 'Region', 'Location', 'EmpType', 'Primary Skills'];
@@ -58,6 +59,13 @@
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
 									{row.primarySkills.join(', ')}
 								</td>
+								<div class="px-6 py-4">
+									<button
+										class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
+									>
+										<Delete />
+									</button>
+								</div>
 							</tr>
 						{/each}
 					</tbody>

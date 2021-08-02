@@ -1,6 +1,6 @@
 <script lang="ts">
 	import firebase from 'firebase/app';
-	import authStore from '../stores/authStore';
+	import authStore from '$lib/stores/authStore';
 	import { goto } from '$app/navigation';
 </script>
 

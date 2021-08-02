@@ -1,10 +1,9 @@
 <script lang="ts">
-	import Button from '../components/button.svelte';
-	import Input from '../components/input.svelte';
-	import AccessDenied from '../components/accessDenied.svelte';
-	import { writeEmployeeDetails } from '../firebase/db/write';
-	import { mkEmployeeDetails } from '../models';
-	import authStore from '../stores/authStore';
+	import Button from '$lib/components/button.svelte';
+	import Input from '$lib/components/input.svelte';
+	import AccessDenied from '$lib/components/accessDenied.svelte';
+	import { mkEmployee } from '$lib/models';
+	import authStore from '$lib/stores/authStore';
 
 	let id: string;
 	let firstName: string;
@@ -19,7 +18,7 @@
 	let error: boolean = false;
 
 	function handleSubmit() {
-		const empDetails = mkEmployeeDetails(
+		const empDetails = mkEmployee(
 			id,
 			firstName,
 			lastName,
@@ -43,7 +42,7 @@
 		) {
 			console.log('Writing employee details to firebase', empDetails);
 
-			fetch('/api/benchList', { method: 'POST', body: JSON.stringify(empDetails) })
+			fetch('/api/user', { method: 'POST', body: JSON.stringify(empDetails) })
 				.then((result) =>
 					result
 						.json()
@@ -51,10 +50,6 @@
 						.catch(() => (error = true))
 				)
 				.catch(() => (error = true));
-
-			// writeEmployeeDetails(empDetails)
-			// .then(() => (submitted = true))
-			// .catch(() => (error = true));
 		} else {
 			error = true;
 			console.error('Fill all the mandatory fields.');
@@ -74,7 +69,6 @@
 			<div class="flex flex-wrap -mx-3 mb-6 md:space-x-4 xl:space-x-8">
 				<div class="w-full md:w-1/3 mb-6 md:mb-0">
 					<Input bind:value={firstName} label="First Name" placeholder="Jane" />
-					<!-- <p class="text-red-500 text-xsitalic">Please fill out this field.</p> -->
 				</div>
 				<div class="w-full md:w-1/3">
 					<Input bind:value={lastName} label="Last Name" placeholder="Doe" />

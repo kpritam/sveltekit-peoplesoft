@@ -1,7 +1,7 @@
-import type { BenchList } from '../../models';
-import faker from 'faker';
+import type { Employee } from '$lib/models';
+import faker from 'faker/locale/en_US';
 
-const generateUsers = (): BenchList =>
+const generateUsers = (): Employee[] =>
 	[...Array(10)].map(() => {
 		const firstName = faker.name.firstName();
 		const lastName = faker.name.lastName();

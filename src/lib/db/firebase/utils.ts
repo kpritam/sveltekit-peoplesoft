@@ -1,4 +1,4 @@
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 
 export type DatabaseRef = firebase.database.Reference;
 export type DataSnapshot = firebase.database.DataSnapshot;

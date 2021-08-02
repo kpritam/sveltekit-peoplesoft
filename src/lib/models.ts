@@ -1,6 +1,6 @@
-import faker from 'faker';
+import faker from 'faker/locale/en_US';
 
-export type EmployeeDetails = {
+export type Employee = {
 	id: string;
 	name: string;
 	imgUrl: string;
@@ -11,9 +11,7 @@ export type EmployeeDetails = {
 	primarySkills: string[];
 };
 
-export type BenchList = EmployeeDetails[];
-
-export const mkEmployeeDetails = (
+export const mkEmployee = (
 	id: string,
 	firstName: string,
 	lastName: string,
@@ -22,7 +20,7 @@ export const mkEmployeeDetails = (
 	location: string,
 	empType: string,
 	primarySkills: string
-): EmployeeDetails => ({
+): Employee => ({
 	id,
 	name: firstName + ' ' + lastName,
 	imgUrl: faker.image.avatar(),
