@@ -1,21 +1,15 @@
-import firebase from 'firebase';
+import { dbRef, DataSnapshot } from './utils';
 
-export function readUser(id: string) {
-	return firebase
-		.database()
-		.ref()
+export const readUser = (id: string): Promise<DataSnapshot> =>
+	dbRef()
 		.child('users')
 		.child(id)
 		.get()
 		.then((snapshot) => {
-			if (snapshot.exists()) {
-				console.log(snapshot.val());
-			} else {
-				console.log('No data available');
-			}
+			console.log(`Read result for ${id} is ${snapshot.val()}`);
 			return snapshot;
 		})
 		.catch((error) => {
-			console.error(error);
+			console.error(`Read failed for ${id}, reason: ${error}`);
+			throw error;
 		});
-}

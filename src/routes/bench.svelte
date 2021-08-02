@@ -20,7 +20,7 @@
 
 <script lang="ts">
 	import Table from '../components/table.svelte';
-	import type { BenchList } from '../types';
+	import type { BenchList } from '../models';
 
 	export let data: BenchList;
 </script>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { BenchList } from '../types';
+	import type { BenchList } from '../models';
 	export let data: BenchList;
 
 	const thead = 'px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider';

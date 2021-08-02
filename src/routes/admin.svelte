@@ -1,5 +1,38 @@
 <script lang="ts">
+	import { writeEmployeeDetails } from '../firebase/db/write';
+
+	import { mkEmployeeDetails } from '../models';
+
 	import authStore from '../stores/authStore';
+
+	let id: string;
+	let firstName: string;
+	let lastName: string;
+	let designation: string;
+	let region: string;
+	let location: string;
+	let empType: string;
+	let primarySkills: string;
+
+	let submitted: boolean = false;
+	let error: boolean = false;
+
+	function handleSubmit() {
+		const empDetails = mkEmployeeDetails(
+			id,
+			firstName,
+			lastName,
+			designation,
+			region,
+			location,
+			empType,
+			primarySkills
+		);
+		console.log('Writing employee details to firebase', empDetails);
+		writeEmployeeDetails(empDetails)
+			.then(() => (submitted = true))
+			.catch(() => (error = true));
+	}
 </script>
 
 <svelte:head>
@@ -24,8 +57,8 @@
 		</div>
 	{:else}
 		<form class="w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl m-4 p-4">
-			<div class="flex flex-wrap -mx-3 mb-6">
-				<div class="w-full md:w-1/2 mb-6 md:mb-0">
+			<div class="flex flex-wrap -mx-3 mb-6 md:space-x-4 xl:space-x-8">
+				<div class="w-full md:w-1/3 mb-6 md:mb-0">
 					<label
 						class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
 						for="grid-first-name"
@@ -37,12 +70,13 @@
 						id="grid-first-name"
 						type="text"
 						placeholder="Jane"
+						bind:value={firstName}
 					/>
-					<!-- <p class="text-red-500 text-xs italic">Please fill out this field.</p> -->
+					<!-- <p class="text-red-500 text-xsitalic">Please fill out this field.</p> -->
 				</div>
-				<div class="w-full md:w-1/2 md:space-x-4">
+				<div class="w-full md:w-1/3">
 					<label
-						class="block uppercase md:mx-4 tracking-wide text-gray-700 text-xs font-bold mb-2"
+						class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
 						for="grid-last-name"
 					>
 						Last Name
@@ -52,37 +86,55 @@
 						id="grid-last-name"
 						type="text"
 						placeholder="Doe"
+						bind:value={lastName}
 					/>
 				</div>
 			</div>
 
-			<div class="flex flex-wrap -mx-3 mb-6">
-				<div class="w-full md:w-1/2 mb-6 md:mb-0">
+			<div class="flex flex-wrap -mx-3 mb-6 md:space-x-4 xl:space-x-8">
+				<div class="md:w-1/6 w-full mb-6 md:mb-0">
 					<label
 						class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-						for="grid-first-name"
+						for="grid-id"
+					>
+						Emp ID
+					</label>
+					<input
+						class="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white"
+						id="grid-id"
+						type="text"
+						placeholder="1001"
+						bind:value={id}
+					/>
+				</div>
+				<div class="md:w-2/6 w-full mb-6 md:mb-0">
+					<label
+						class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+						for="grid-designation"
 					>
 						Designation
 					</label>
 					<input
 						class="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white"
-						id="grid-developer"
+						id="grid-designation"
 						type="text"
 						placeholder="Developer"
+						bind:value={designation}
 					/>
 				</div>
-				<div class="w-full md:w-1/2 md:space-x-4">
+				<div class="md:w-2/6 w-full md:mb-0">
 					<label
-						class="block uppercase md:mx-4 tracking-wide text-gray-700 text-xs font-bold mb-2"
-						for="grid-last-name"
+						class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+						for="grid-emp-type"
 					>
 						Employee Type
 					</label>
 					<input
 						class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-						id="grid-contractor"
+						id="grid-emp-type"
 						type="text"
 						placeholder="Contractor"
+						bind:value={empType}
 					/>
 				</div>
 			</div>
@@ -91,7 +143,7 @@
 				<div class="w-full md:w-1/2">
 					<label
 						class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-						for="grid-last-name"
+						for="grid-primary-skills"
 					>
 						Primary Skills
 					</label>
@@ -100,6 +152,7 @@
 						id="grid-primary-skills"
 						type="text"
 						placeholder="Typescript, Scala"
+						bind:value={primarySkills}
 					/>
 				</div>
 			</div>
@@ -109,28 +162,30 @@
 					<div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
 						<label
 							class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-							for="grid-city"
+							for="grid-region"
 						>
 							Region
 						</label>
 						<input
 							class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-							id="grid-city"
+							id="grid-region"
 							type="text"
 							placeholder="Albuquerque"
+							bind:value={region}
 						/>
 					</div>
 					<div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
 						<label
 							class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-							for="grid-state"
+							for="grid-location"
 						>
 							Location
 						</label>
 						<div class="relative">
 							<select
 								class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-								id="grid-state"
+								id="grid-location"
+								bind:value={location}
 							>
 								<option>New Mexico</option>
 								<option>Missouri</option>
@@ -157,10 +212,17 @@
 				<button
 					class="bg-[#258897] hover:bg-[#27575f] text-white font-bold py-2 px-6 rounded-md focus:outline-none focus:shadow-outline"
 					type="button"
+					on:click={() => handleSubmit()}
 				>
 					Submit
 				</button>
 			</div>
+			{#if submitted}
+				<p class="text-green-500 text-xsitalic">Form submission successful.</p>
+			{/if}
+			{#if error}
+				<p class="text-red-500 text-xsitalic">Form submission failed.</p>
+			{/if}
 		</form>
 	{/if}
 </div>
