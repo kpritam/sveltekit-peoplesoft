@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Button from '$lib/components/button.svelte';
 	import Input from '$lib/components/input.svelte';
-	import AccessDenied from '$lib/components/accessDenied.svelte';
+	import Error from './__error.svelte';
 	import { mkEmployee } from '$lib/models';
 	import authStore from '$lib/stores/authStore';
 
@@ -63,7 +63,7 @@
 
 <div class="container mx-auto">
 	{#if !$authStore.isLoggedIn}
-		<AccessDenied />
+		<Error status="404" error="Not Found" />
 	{:else}
 		<form class="w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl m-4 p-4">
 			<div class="flex flex-wrap -mx-3 mb-6 md:space-x-4 xl:space-x-8">

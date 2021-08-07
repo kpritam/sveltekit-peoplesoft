@@ -2,10 +2,12 @@
 	import type { Employee } from '$lib/models';
 	import Delete from '$lib/components/icons/delete.svelte';
 	import Edit from './icons/edit.svelte';
+	import authStore from '$lib/stores/authStore';
 	export let data: Employee[];
 
 	let selectAllCheckbox = false;
 	let selectedEmployees: Employee[] = [];
+	$: loggedIn = $authStore.isLoggedIn;
 
 	$: console.log(selectedEmployees.map((e) => e.id).join(', '));
 
@@ -49,25 +51,29 @@
 	}
 
 	const thead = 'px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider';
-	const headers = [
+	const unprotectedHeaders = [
 		'Name',
 		'Designation',
 		'Region',
 		'Location',
 		'EmpType',
-		'Primary Skills',
-		'Actions'
+		'Primary Skills'
 	];
+
+	const protectedHeaders = [...unprotectedHeaders, 'Actions'];
+	$: headers = loggedIn ? protectedHeaders : unprotectedHeaders;
 </script>
 
-<div class="flex justify-start p-2 m-2">
-	<button
-		on:click={() => deleteSelectedEmployees()}
-		class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
-	>
-		<Delete />
-	</button>
-</div>
+{#if loggedIn}
+	<div class="flex justify-start p-2 m-2">
+		<button
+			on:click={() => deleteSelectedEmployees()}
+			class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
+		>
+			<Delete />
+		</button>
+	</div>
+{/if}
 <div class="flex flex-col">
 	<div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
 		<div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -76,12 +82,14 @@
 					<thead class="bg-gray-50">
 						<tr>
 							<th scope="col" class={thead}>
-								<input
-									type="checkbox"
-									class="mr-4 items-center"
-									bind:checked={selectAllCheckbox}
-									on:change={() => onSelectAllChanged()}
-								/>
+								{#if loggedIn}
+									<input
+										type="checkbox"
+										class="mr-4 items-center"
+										bind:checked={selectAllCheckbox}
+										on:change={() => onSelectAllChanged()}
+									/>
+								{/if}
 								{headers[0]}
 							</th>
 							{#each headers.slice(1) as header}
@@ -99,12 +107,14 @@
 							<tr>
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div class="flex items-center">
-										<input
-											type="checkbox"
-											class="mr-4 items-center"
-											on:change={(e) => selectRow(row)}
-											checked={selectAllCheckbox || selectedEmployees.includes(row)}
-										/>
+										{#if loggedIn}
+											<input
+												type="checkbox"
+												class="mr-4 items-center"
+												on:change={(e) => selectRow(row)}
+												checked={selectAllCheckbox || selectedEmployees.includes(row)}
+											/>
+										{/if}
 										<div class="flex-shrink-0 h-10 w-10">
 											<img class="h-10 w-10 rounded-full" src={row.imgUrl} alt="" />
 										</div>
@@ -135,20 +145,22 @@
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
 									{row.primarySkills.join(', ')}
 								</td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-									<button
-										on:click={() => {}}
-										class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
-									>
-										<Edit />
-									</button>
-									<button
-										on:click={() => deleteEmployeeId(row.id)}
-										class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
-									>
-										<Delete />
-									</button>
-								</td>
+								{#if loggedIn}
+									<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+										<button
+											on:click={() => {}}
+											class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
+										>
+											<Edit />
+										</button>
+										<button
+											on:click={() => deleteEmployeeId(row.id)}
+											class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
+										>
+											<Delete />
+										</button>
+									</td>
+								{/if}
 							</tr>
 						{/each}
 					</tbody>

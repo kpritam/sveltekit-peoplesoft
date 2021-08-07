@@ -1,7 +1,9 @@
 <script lang="ts">
 </script>
 
-<svelte:head>Home</svelte:head>
+<svelte:head>
+	<title>Home</title>
+</svelte:head>
 
 <div class="flex justify-center">
 	<h3
