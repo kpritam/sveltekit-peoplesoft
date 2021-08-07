@@ -8,11 +8,11 @@ const readUser = (id: string): Promise<DataSnapshot> =>
 		.child(id)
 		.get()
 		.then((snapshot) => {
-			console.log(`Read result for ${id} is ${snapshot.val()}`);
+			console.log(`[Firebase] Read result from employee id: ${id} is ${snapshot.val()}`);
 			return snapshot;
 		})
 		.catch((error) => {
-			console.error(`Read failed for ${id}, reason: ${error}`);
+			console.error(`[Firebase] Failed to read data for employee id: ${id}, reason: ${error}`);
 			throw error;
 		});
 
@@ -28,10 +28,22 @@ const readAllUsers = (): Promise<Employee[]> =>
 		});
 
 const writeEmployee = ({ id, ...rest }: Employee): Promise<void> =>
-	dbRef('users/' + id)
-		.set(rest)
-		.then(() => console.log('Firebase write succeeded.'))
-		.catch((e) => console.error(`Firebase write failed for ${id}, reason: ${e}`));
+	dbRef('users/' + id).set(rest, (error) => {
+		if (error) {
+			console.error(`[Firebase] Failed to save employee id: ${id}, reason: ${error}`);
+			throw error;
+		}
+		console.log(`[Firebase] Employee id: ${id} saved successfully.`);
+	});
+
+const removeEmployee = (id: string): Promise<void> =>
+	dbRef('users/' + id).remove((error) => {
+		if (error) {
+			console.error(`[Firebase] Failed to delete employee id: ${id}, reason: ${error}`);
+			throw error;
+		}
+		console.log(`[Firebase] Employee id: ${id} deleted successfully.`);
+	});
 
 export class FirebaseUserService implements UserService {
 	readAllUsers(): Promise<Employee[]> {
@@ -45,5 +57,9 @@ export class FirebaseUserService implements UserService {
 
 	writeUser(user: Employee): Promise<void> {
 		return writeEmployee(user);
+	}
+
+	removeUser(id: string): Promise<void> {
+		return removeEmployee(id);
 	}
 }

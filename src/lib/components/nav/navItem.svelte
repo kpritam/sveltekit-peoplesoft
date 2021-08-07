@@ -10,8 +10,7 @@
 
 <div
 	class="cursor-pointer z-50 px-4 py-2 {active &&
-		'bg-[#266974]'}  hover:bg-[#266974] rounded-xl group
-hover:animate-bounce ease-out transition scale-100"
+		'bg-[#266974]'}  hover:bg-[#266974] rounded-xl group"
 	on:click={() => item.click()}
 >
 	<a href={link} bind:this={item} class="uppercase group-hover:text-[#ffffff] text-[#d6eaee]">

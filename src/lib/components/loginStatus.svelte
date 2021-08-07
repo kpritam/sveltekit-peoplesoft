@@ -14,7 +14,7 @@
 		</div>
 		<div
 			on:click={() => firebase.auth().signOut()}
-			class="ml-4 cursor-pointer p-2 hover:bg-[#266974] rounded-xl group hover:animate-bounce ease-out transition scale-100"
+			class="ml-4 cursor-pointer p-2 hover:bg-[#266974] rounded-xl group"
 		>
 			<button on:click class="uppercase hover:text-[#ffffff] text-[#d6eaee]">Logout</button>
 		</div>

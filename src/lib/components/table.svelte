@@ -1,12 +1,73 @@
 <script lang="ts">
 	import type { Employee } from '$lib/models';
 	import Delete from '$lib/components/icons/delete.svelte';
+	import Edit from './icons/edit.svelte';
 	export let data: Employee[];
 
+	let selectAllCheckbox = false;
+	let selectedEmployees: Employee[] = [];
+
+	$: console.log(selectedEmployees.map((e) => e.id).join(', '));
+
+	function selectAllEmployees() {
+		selectedEmployees = data;
+	}
+
+	function resetSelection() {
+		selectedEmployees = [];
+	}
+
+	function onSelectAllChanged() {
+		selectAllCheckbox ? selectAllEmployees() : resetSelection();
+	}
+
+	function selectRow(employee: Employee) {
+		const isSelected = selectedEmployees.includes(employee);
+		if (isSelected) {
+			selectedEmployees = selectedEmployees.filter((e) => e.id !== employee.id);
+			selectAllCheckbox = false;
+		} else {
+			selectedEmployees = [...selectedEmployees, employee];
+		}
+	}
+
+	function deleteSelectedEmployees() {
+		selectedEmployees.forEach(({ id }) => {
+			console.log(`Deleting employee id: ${id}`);
+			fetch('/api/user/' + id, { method: 'DELETE' }).then(() => {
+				// TODO update when all the request are done
+				data = data.filter((e) => e.id !== id);
+			});
+		});
+	}
+
+	function deleteEmployeeId(id: string) {
+		console.log(`Deleting employee id: ${id}`);
+		fetch('/api/user/' + id, { method: 'DELETE' }).then(() => {
+			data = data.filter((e) => e.id !== id);
+		});
+	}
+
 	const thead = 'px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider';
-	const headers = ['Name', 'Designation', 'Region', 'Location', 'EmpType', 'Primary Skills'];
+	const headers = [
+		'Name',
+		'Designation',
+		'Region',
+		'Location',
+		'EmpType',
+		'Primary Skills',
+		'Actions'
+	];
 </script>
 
+<div class="flex justify-start p-2 m-2">
+	<button
+		on:click={() => deleteSelectedEmployees()}
+		class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
+	>
+		<Delete />
+	</button>
+</div>
 <div class="flex flex-col">
 	<div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
 		<div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -14,7 +75,16 @@
 				<table class="min-w-full divide-y divide-gray-200">
 					<thead class="bg-gray-50">
 						<tr>
-							{#each headers as header}
+							<th scope="col" class={thead}>
+								<input
+									type="checkbox"
+									class="mr-4 items-center"
+									bind:checked={selectAllCheckbox}
+									on:change={() => onSelectAllChanged()}
+								/>
+								{headers[0]}
+							</th>
+							{#each headers.slice(1) as header}
 								<th scope="col" class={thead}>
 									{header}
 								</th>
@@ -25,10 +95,16 @@
 						</tr>
 					</thead>
 					<tbody class="bg-white divide-y divide-gray-200">
-						{#each data as row}
+						{#each data as row, index}
 							<tr>
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div class="flex items-center">
+										<input
+											type="checkbox"
+											class="mr-4 items-center"
+											on:change={(e) => selectRow(row)}
+											checked={selectAllCheckbox || selectedEmployees.includes(row)}
+										/>
 										<div class="flex-shrink-0 h-10 w-10">
 											<img class="h-10 w-10 rounded-full" src={row.imgUrl} alt="" />
 										</div>
@@ -59,13 +135,20 @@
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
 									{row.primarySkills.join(', ')}
 								</td>
-								<div class="px-6 py-4">
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
 									<button
+										on:click={() => {}}
+										class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
+									>
+										<Edit />
+									</button>
+									<button
+										on:click={() => deleteEmployeeId(row.id)}
 										class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
 									>
 										<Delete />
 									</button>
-								</div>
+								</td>
 							</tr>
 						{/each}
 					</tbody>
