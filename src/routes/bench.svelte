@@ -19,10 +19,13 @@
 </script>
 
 <script lang="ts">
-	import Table from '$lib/components/table.svelte';
-	import type { Employee } from '$lib/models';
+	import EmployeeTable from '$lib/components/employeeTable.svelte';
+	import type { Employee } from '$lib/models/employee';
+	import { mkEmployeeRowFrom } from '$lib/models/employee';
 
 	export let data: Employee[];
+
+	$: tableData = data.map((e) => mkEmployeeRowFrom(e));
 </script>
 
 <svelte:head>
@@ -30,5 +33,5 @@
 </svelte:head>
 
 <div class="m-6">
-	<Table {data} />
+	<EmployeeTable data={tableData} />
 </div>

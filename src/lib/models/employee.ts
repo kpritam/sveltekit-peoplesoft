@@ -11,6 +11,18 @@ export type Employee = {
 	primarySkills: string[];
 };
 
+export type EmployeeRow = Omit<Employee, 'primarySkills'> & { primarySkills: string };
+
+export const mkEmployeeFrom = ({ primarySkills, ...rest }: EmployeeRow): Employee => ({
+	...rest,
+	primarySkills: primarySkills.split(',').map((s) => s.trim())
+});
+
+export const mkEmployeeRowFrom = ({ primarySkills, ...rest }: Employee): EmployeeRow => ({
+	...rest,
+	primarySkills: primarySkills.join(', ')
+});
+
 export const mkEmployee = (
 	id: string,
 	firstName: string,

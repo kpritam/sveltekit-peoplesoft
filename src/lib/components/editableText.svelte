@@ -4,13 +4,12 @@
 	export let onChange: (value: string) => void;
 </script>
 
-{#if readonly}
-	{value}
-{:else}
-	<input
-		placeholder={value}
-		class="text-gray-400 placeholder-gray-500 w-full border-b border-gray-300 outline-none p-2"
-		on:change={(e) => onChange(e.currentTarget.value)}
-		bind:value
-	/>
-{/if}
+<input
+	{readonly}
+	placeholder={value}
+	class="placeholder-gray-500 w-full outline-none p-2 {readonly
+		? 'text-gray-500'
+		: 'text-gray-400 border-b border-gray-300'}"
+	on:change={(e) => onChange(e.currentTarget.value)}
+	bind:value
+/>

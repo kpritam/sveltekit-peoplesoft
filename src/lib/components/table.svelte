@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Employee } from '$lib/models';
+	import type { TableData, TableRow } from '$lib/models/table';
 	import Delete from '$lib/components/icons/delete.svelte';
 	import Edit from '$lib/components/icons/edit.svelte';
 	import Tick from '$lib/components/icons/tick.svelte';
@@ -7,92 +7,81 @@
 	import authStore from '$lib/stores/authStore';
 	import EditableText from '$lib/components/editableText.svelte';
 
-	export let data: Employee[];
+	export let data: TableData;
+	export let headers: string[];
+	export let onSelectedRowDelete: (rowId: string) => Promise<void>;
+	export let onSelectedRowUpdate: (row: TableRow) => Promise<void>;
+	export let onSelectedRowsDelete: (rows: TableRow[]) => Promise<void>;
 
 	let selectAllCheckbox = false;
-	let selectedEmployees: Employee[] = [];
-	let modifiedEmployee: Employee | null = null;
+	let selectedRows: TableRow[] = [];
+	let modifiedRow: TableRow | null = null;
 
 	$: loggedIn = $authStore.isLoggedIn;
 
-	function selectAllEmployees() {
-		selectedEmployees = data;
+	function selectAllRows() {
+		selectedRows = data;
 	}
 
 	function resetSelection() {
-		selectedEmployees = [];
+		selectedRows = [];
 	}
 
 	function onSelectAllChanged() {
-		selectAllCheckbox ? selectAllEmployees() : resetSelection();
+		selectAllCheckbox ? selectAllRows() : resetSelection();
 	}
 
-	function selectRow(employee: Employee) {
-		const isSelected = selectedEmployees.includes(employee);
+	function selectRow(row: TableRow) {
+		const isSelected = selectedRows.includes(row);
 		if (isSelected) {
-			selectedEmployees = selectedEmployees.filter((e) => e.id !== employee.id);
+			selectedRows = selectedRows.filter((e) => e.id !== row.id);
 			selectAllCheckbox = false;
 		} else {
-			selectedEmployees = [...selectedEmployees, employee];
+			selectedRows = [...selectedRows, row];
 		}
 	}
 
-	function deleteSelectedEmployees() {
-		selectedEmployees.forEach(({ id }) => {
-			console.log(`Deleting employee id: ${id}`);
-			fetch('/api/user/' + id, { method: 'DELETE' }).then(() => {
-				// TODO update when all the request are done
-				data = data.filter((e) => e.id !== id);
-			});
+	function deleteSelectedRows() {
+		onSelectedRowsDelete(selectedRows).then(() => {
+			data = data.filter((d) => selectedRows.map((e) => e.id).includes(d.id));
 		});
 	}
 
-	function deleteEmployeeId(id: string) {
-		console.log(`Deleting employee id: ${id}`);
-		fetch('/api/user/' + id, { method: 'DELETE' }).then(() => {
+	function deleteRowId(id: string) {
+		onSelectedRowDelete(id).then(() => {
 			data = data.filter((e) => e.id !== id);
 		});
 	}
 
-	function updateEmployee(employee: Employee, index: number) {
-		fetch('/api/user', { method: 'POST', body: JSON.stringify(employee) })
-			.then(() => {
-				data[index] = employee;
-				modifiedEmployee = null;
-				console.log(`Succesfully updated employee details for id: ${employee.id}`);
-			})
-			.catch(() => console.error(`Failed to update employee details for id: ${employee.id}`));
+	function updateRow(row: TableRow, index: number) {
+		onSelectedRowUpdate(row).then(() => {
+			data[index] = row;
+			modifiedRow = null;
+		});
 	}
 
 	const thead =
 		'px-6 py-3 text-left text-xs font-medium text-gray-900 font-bold uppercase tracking-wider';
-	const unprotectedHeaders = [
-		'Name',
-		'Designation',
-		'Region',
-		'Location',
-		'EmpType',
-		'Primary Skills'
-	];
 
-	const protectedHeaders = [...unprotectedHeaders, 'Actions'];
-	$: headers = loggedIn ? protectedHeaders : unprotectedHeaders;
+	$: unprotectedHeaders = headers;
+	$: protectedHeaders = [...unprotectedHeaders, 'Actions'];
+	$: newHeaders = loggedIn ? protectedHeaders : unprotectedHeaders;
 
-	function compareEmployee(a: Employee, b: Employee) {
+	function compareRow(a: TableRow, b: TableRow) {
 		return a && b && a.id === b.id;
 	}
 
-	function getEmployee(row: Employee) {
-		if (modifiedEmployee === null) return row;
+	function getRow(row: TableRow) {
+		if (modifiedRow === null) return row;
 
-		return compareEmployee(row, modifiedEmployee) ? modifiedEmployee : row;
+		return compareRow(row, modifiedRow) ? modifiedRow : row;
 	}
 </script>
 
 {#if loggedIn}
 	<div class="flex justify-start p-2 m-2">
 		<button
-			on:click={() => deleteSelectedEmployees()}
+			on:click={() => deleteSelectedRows()}
 			class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
 		>
 			<Delete />
@@ -115,9 +104,9 @@
 										on:change={() => onSelectAllChanged()}
 									/>
 								{/if}
-								{headers[0]}
+								{newHeaders[0]}
 							</th>
-							{#each headers.slice(1) as header}
+							{#each newHeaders.slice(1) as header}
 								<th scope="col" class={thead}>
 									{header}
 								</th>
@@ -127,50 +116,45 @@
 					<tbody class="bg-white divide-y divide-gray-200">
 						{#each data as row, index (row.id)}
 							<tr>
-								<td class="px-6 py-4 whitespace-nowrap">
-									<div class="flex items-center">
-										{#if loggedIn}
-											<input
-												type="checkbox"
-												class="mr-4 items-center"
-												on:change={() => selectRow(row)}
-												checked={selectAllCheckbox || selectedEmployees.includes(row)}
+								{#each headers as key, index}
+									<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+										<!-- Display selection checkbox only if user is logged in -->
+										<!-- Display image in first coloum if imgUrl property presents -->
+										{#if loggedIn && index === 0}
+											<div class="flex items-center">
+												<input
+													type="checkbox"
+													class="mr-4 items-center"
+													on:change={() => selectRow(row)}
+													checked={selectAllCheckbox || selectedRows.includes(row)}
+												/>
+												{#if 'imgUrl' in row}
+													<div class="flex-shrink-0 h-10 w-10 ">
+														<img class="h-10 1-10 rounded-full" src={row['imgUrl']} alt="" />
+													</div>
+												{/if}
+												<EditableText
+													value={getRow(row)[key]}
+													readonly={!compareRow(row, modifiedRow)}
+													onChange={(v) => (modifiedRow[key] = v)}
+												/>
+											</div>
+										{:else}
+											<EditableText
+												value={getRow(row)[key]}
+												readonly={!compareRow(row, modifiedRow)}
+												onChange={(v) => (modifiedRow[key] = v)}
 											/>
 										{/if}
-										<div class="flex-shrink-0 h-10 w-10">
-											<img class="h-10 w-10 rounded-full" src={row.imgUrl} alt="" />
-										</div>
-										<div class="ml-4">
-											<div class="text-sm font-medium text-gray-900">
-												{row.name}
-											</div>
-										</div>
-									</div>
-								</td>
-								{#each ['designation', 'region', 'location', 'empType'] as key}
-									<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-										<EditableText
-											value={getEmployee(row)[key]}
-											readonly={!compareEmployee(row, modifiedEmployee)}
-											onChange={(v) => (modifiedEmployee[key] = v)}
-										/>
 									</td>
 								{/each}
 
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-									<EditableText
-										value={getEmployee(row).primarySkills.join(', ')}
-										readonly={!compareEmployee(row, modifiedEmployee)}
-										onChange={(v) =>
-											(modifiedEmployee.primarySkills = v.split(',').map((e) => e.trim()))}
-									/>
-								</td>
 								{#if loggedIn}
 									<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-										{#if modifiedEmployee && row.id === modifiedEmployee.id}
+										{#if modifiedRow && row.id === modifiedRow.id}
 											<button
 												on:click={() => {
-													updateEmployee(modifiedEmployee, index);
+													updateRow(modifiedRow, index);
 												}}
 												class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
 											>
@@ -178,7 +162,7 @@
 											</button>
 											<button
 												on:click={() => {
-													modifiedEmployee = null;
+													modifiedRow = null;
 													data = data.filter((e) => e);
 												}}
 												class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
@@ -187,13 +171,13 @@
 											</button>
 										{:else}
 											<button
-												on:click={() => (modifiedEmployee = { ...row })}
+												on:click={() => (modifiedRow = { ...row })}
 												class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
 											>
 												<Edit />
 											</button>
 											<button
-												on:click={() => deleteEmployeeId(row.id)}
+												on:click={() => deleteRowId(row.id)}
 												class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
 											>
 												<Delete />

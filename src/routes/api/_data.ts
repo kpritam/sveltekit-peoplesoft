@@ -1,4 +1,4 @@
-import type { Employee } from '$lib/models';
+import type { Employee } from '$lib/models/employee';
 import faker from 'faker/locale/en_US';
 
 const generateUsers = (): Employee[] =>

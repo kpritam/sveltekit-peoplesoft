@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FIREBASE_CONFIG } from '$lib/db/firebase/env';
 
 export async function initFirebase(): Promise<void> {

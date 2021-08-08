@@ -1,11 +1,13 @@
 import type { EndpointOutput, Request } from '@sveltejs/kit';
-import type { Employee } from '$lib/models';
+import { EmployeeRow, mkEmployeeFrom } from '$lib/models/employee';
 import { userService } from '../_instances';
 
-export async function post(req: Request<Record<string, any>, Employee>): Promise<EndpointOutput> {
+export async function post(
+	req: Request<Record<string, any>, EmployeeRow>
+): Promise<EndpointOutput> {
 	try {
-		const empDetails = JSON.parse(req.body as any);
-		await userService.writeUser(empDetails);
+		const empDetails: EmployeeRow = JSON.parse(req.body as any);
+		await userService.writeUser(mkEmployeeFrom(empDetails));
 		return { status: 201 };
 	} catch (e) {
 		console.error('Firebase write failed, reason: ', e);

@@ -1,4 +1,4 @@
-import type { Employee } from './models';
+import type { Employee } from './models/employee';
 
 export interface UserService {
 	readAllUsers(): Promise<Employee[]>;

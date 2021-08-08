@@ -2,7 +2,7 @@
 	import Button from '$lib/components/button.svelte';
 	import Input from '$lib/components/input.svelte';
 	import Error from './__error.svelte';
-	import { mkEmployee } from '$lib/models';
+	import { mkEmployee } from '$lib/models/employee';
 	import authStore from '$lib/stores/authStore';
 
 	let id: string;

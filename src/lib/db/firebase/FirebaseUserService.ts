@@ -1,4 +1,4 @@
-import type { Employee } from '$lib/models';
+import type { Employee } from '$lib/models/employee';
 import type { UserService } from '$lib/UserService';
 import { dbRef, DataSnapshot } from './utils';
 
