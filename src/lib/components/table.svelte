@@ -54,6 +54,16 @@
 		});
 	}
 
+	function updateEmployee(employee: Employee, index: number) {
+		fetch('/api/user', { method: 'POST', body: JSON.stringify(employee) })
+			.then(() => {
+				data[index] = employee;
+				modifiedEmployee = null;
+				console.log(`Succesfully updated employee details for id: ${employee.id}`);
+			})
+			.catch(() => console.error(`Failed to update employee details for id: ${employee.id}`));
+	}
+
 	const thead =
 		'px-6 py-3 text-left text-xs font-medium text-gray-900 font-bold uppercase tracking-wider';
 	const unprotectedHeaders = [
@@ -137,38 +147,15 @@
 										</div>
 									</div>
 								</td>
-
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-									<EditableText
-										value={getEmployee(row).designation}
-										readonly={!compareEmployee(row, modifiedEmployee)}
-										onChange={(v) => (modifiedEmployee.designation = v)}
-									/>
-								</td>
-
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-									<EditableText
-										value={getEmployee(row).region}
-										readonly={!compareEmployee(row, modifiedEmployee)}
-										onChange={(v) => (modifiedEmployee.region = v)}
-									/>
-								</td>
-
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-									<EditableText
-										value={getEmployee(row).location}
-										readonly={!compareEmployee(row, modifiedEmployee)}
-										onChange={(v) => (modifiedEmployee.location = v)}
-									/>
-								</td>
-
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-									<EditableText
-										value={getEmployee(row).empType}
-										readonly={!compareEmployee(row, modifiedEmployee)}
-										onChange={(v) => (modifiedEmployee.empType = v)}
-									/>
-								</td>
+								{#each ['designation', 'region', 'location', 'empType'] as key}
+									<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+										<EditableText
+											value={getEmployee(row)[key]}
+											readonly={!compareEmployee(row, modifiedEmployee)}
+											onChange={(v) => (modifiedEmployee[key] = v)}
+										/>
+									</td>
+								{/each}
 
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
 									<EditableText
@@ -182,6 +169,9 @@
 									<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
 										{#if modifiedEmployee && row.id === modifiedEmployee.id}
 											<button
+												on:click={() => {
+													updateEmployee(modifiedEmployee, index);
+												}}
 												class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
 											>
 												<Tick />
@@ -197,10 +187,7 @@
 											</button>
 										{:else}
 											<button
-												on:click={() => {
-													console.log(row);
-													modifiedEmployee = { ...row };
-												}}
+												on:click={() => (modifiedEmployee = { ...row })}
 												class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
 											>
 												<Edit />

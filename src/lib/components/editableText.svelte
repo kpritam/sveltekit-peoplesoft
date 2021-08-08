@@ -5,9 +5,7 @@
 </script>
 
 {#if readonly}
-	<div>
-		{value}
-	</div>
+	{value}
 {:else}
 	<input
 		placeholder={value}
