@@ -1,15 +1,19 @@
 <script lang="ts">
 	import type { Employee } from '$lib/models';
 	import Delete from '$lib/components/icons/delete.svelte';
-	import Edit from './icons/edit.svelte';
+	import Edit from '$lib/components/icons/edit.svelte';
+	import Tick from '$lib/components/icons/tick.svelte';
+	import Cross from '$lib/components/icons/cross.svelte';
 	import authStore from '$lib/stores/authStore';
+	import EditableText from '$lib/components/editableText.svelte';
+
 	export let data: Employee[];
 
 	let selectAllCheckbox = false;
 	let selectedEmployees: Employee[] = [];
-	$: loggedIn = $authStore.isLoggedIn;
+	let modifiedEmployee: Employee | null = null;
 
-	$: console.log(selectedEmployees.map((e) => e.id).join(', '));
+	$: loggedIn = $authStore.isLoggedIn;
 
 	function selectAllEmployees() {
 		selectedEmployees = data;
@@ -50,7 +54,8 @@
 		});
 	}
 
-	const thead = 'px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider';
+	const thead =
+		'px-6 py-3 text-left text-xs font-medium text-gray-900 font-bold uppercase tracking-wider';
 	const unprotectedHeaders = [
 		'Name',
 		'Designation',
@@ -62,6 +67,16 @@
 
 	const protectedHeaders = [...unprotectedHeaders, 'Actions'];
 	$: headers = loggedIn ? protectedHeaders : unprotectedHeaders;
+
+	function compareEmployee(a: Employee, b: Employee) {
+		return a && b && a.id === b.id;
+	}
+
+	function getEmployee(row: Employee) {
+		if (modifiedEmployee === null) return row;
+
+		return compareEmployee(row, modifiedEmployee) ? modifiedEmployee : row;
+	}
 </script>
 
 {#if loggedIn}
@@ -97,13 +112,10 @@
 									{header}
 								</th>
 							{/each}
-							<th scope="col" class="relative px-6 py-3">
-								<span class="sr-only">Edit</span>
-							</th>
 						</tr>
 					</thead>
 					<tbody class="bg-white divide-y divide-gray-200">
-						{#each data as row, index}
+						{#each data as row, index (row.id)}
 							<tr>
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div class="flex items-center">
@@ -111,7 +123,7 @@
 											<input
 												type="checkbox"
 												class="mr-4 items-center"
-												on:change={(e) => selectRow(row)}
+												on:change={() => selectRow(row)}
 												checked={selectAllCheckbox || selectedEmployees.includes(row)}
 											/>
 										{/if}
@@ -127,38 +139,79 @@
 								</td>
 
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-									{row.designation}
+									<EditableText
+										value={getEmployee(row).designation}
+										readonly={!compareEmployee(row, modifiedEmployee)}
+										onChange={(v) => (modifiedEmployee.designation = v)}
+									/>
 								</td>
 
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-									{row.region}
+									<EditableText
+										value={getEmployee(row).region}
+										readonly={!compareEmployee(row, modifiedEmployee)}
+										onChange={(v) => (modifiedEmployee.region = v)}
+									/>
 								</td>
 
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-									{row.location}
+									<EditableText
+										value={getEmployee(row).location}
+										readonly={!compareEmployee(row, modifiedEmployee)}
+										onChange={(v) => (modifiedEmployee.location = v)}
+									/>
 								</td>
 
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-									{row.empType}
+									<EditableText
+										value={getEmployee(row).empType}
+										readonly={!compareEmployee(row, modifiedEmployee)}
+										onChange={(v) => (modifiedEmployee.empType = v)}
+									/>
 								</td>
 
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-									{row.primarySkills.join(', ')}
+									<EditableText
+										value={getEmployee(row).primarySkills.join(', ')}
+										readonly={!compareEmployee(row, modifiedEmployee)}
+										onChange={(v) =>
+											(modifiedEmployee.primarySkills = v.split(',').map((e) => e.trim()))}
+									/>
 								</td>
 								{#if loggedIn}
 									<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-										<button
-											on:click={() => {}}
-											class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
-										>
-											<Edit />
-										</button>
-										<button
-											on:click={() => deleteEmployeeId(row.id)}
-											class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
-										>
-											<Delete />
-										</button>
+										{#if modifiedEmployee && row.id === modifiedEmployee.id}
+											<button
+												class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
+											>
+												<Tick />
+											</button>
+											<button
+												on:click={() => {
+													modifiedEmployee = null;
+													data = data.filter((e) => e);
+												}}
+												class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
+											>
+												<Cross />
+											</button>
+										{:else}
+											<button
+												on:click={() => {
+													console.log(row);
+													modifiedEmployee = { ...row };
+												}}
+												class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
+											>
+												<Edit />
+											</button>
+											<button
+												on:click={() => deleteEmployeeId(row.id)}
+												class="inline-flex items-center justify-center w-10 h-10 mr-2 text-gray-700 transition-colors duration-150 bg-white rounded-full focus:shadow-outline hover:bg-gray-200"
+											>
+												<Delete />
+											</button>
+										{/if}
 									</td>
 								{/if}
 							</tr>
