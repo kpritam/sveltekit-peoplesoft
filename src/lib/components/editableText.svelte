@@ -4,12 +4,18 @@
 	export let onChange: (value: string) => void;
 </script>
 
-<input
-	{readonly}
-	placeholder={value}
-	class="placeholder-gray-500 w-full outline-none p-2 {readonly
-		? 'text-gray-500'
-		: 'text-gray-400 border-b border-gray-300'}"
-	on:change={(e) => onChange(e.currentTarget.value)}
-	bind:value
-/>
+{#if readonly}
+	{#each value.split(/\n/) as line, i}
+		{line}
+		{#if i < value.split(/\n/).length - 1}
+			<br />
+		{/if}
+	{/each}
+{:else}
+	<textarea
+		placeholder={value}
+		class="placeholder-gray-500 w-full outline-none p-2 text-gray-400 border-b border-gray-300"
+		on:change={(e) => onChange(e.currentTarget.value)}
+		bind:value
+	/>
+{/if}

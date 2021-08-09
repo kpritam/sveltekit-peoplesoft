@@ -60,10 +60,7 @@
 		});
 	}
 
-	const thead =
-		'px-6 py-3 text-left text-xs font-medium text-gray-900 font-bold uppercase tracking-wider';
-
-	$: unprotectedHeaders = headers;
+	$: unprotectedHeaders = headers.map((s) => s.replace(/([A-Z])/g, ' $1'));
 	$: protectedHeaders = [...unprotectedHeaders, 'Actions'];
 	$: newHeaders = loggedIn ? protectedHeaders : unprotectedHeaders;
 
@@ -95,7 +92,10 @@
 				<table class="min-w-full divide-y divide-gray-200">
 					<thead class="bg-gray-50">
 						<tr>
-							<th scope="col" class={thead}>
+							<th
+								scope="col"
+								class="px-6 py-3 text-left text-xs text-gray-900 font-bold uppercase tracking-widest flex"
+							>
 								{#if loggedIn}
 									<input
 										type="checkbox"
@@ -107,7 +107,10 @@
 								{newHeaders[0]}
 							</th>
 							{#each newHeaders.slice(1) as header}
-								<th scope="col" class={thead}>
+								<th
+									scope="col"
+									class="px-6 py-3 text-left text-xs text-gray-900 font-bold uppercase tracking-widest"
+								>
 									{header}
 								</th>
 							{/each}
@@ -129,7 +132,7 @@
 													checked={selectAllCheckbox || selectedRows.includes(row)}
 												/>
 												{#if 'imgUrl' in row}
-													<div class="flex-shrink-0 h-10 w-10 ">
+													<div class="mr-2 flex-shrink-0 h-10 w-10 ">
 														<img class="h-10 1-10 rounded-full" src={row['imgUrl']} alt="" />
 													</div>
 												{/if}
