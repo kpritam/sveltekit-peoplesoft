@@ -43,7 +43,7 @@
 
 	function deleteSelectedRows() {
 		onSelectedRowsDelete(selectedRows).then(() => {
-			data = data.filter((d) => selectedRows.map((e) => e.id).includes(d.id));
+			data = data.filter((d) => !selectedRows.map((e) => e.id).includes(d.id));
 		});
 	}
 
